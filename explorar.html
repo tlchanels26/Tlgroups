@@ -1,1 +1,37 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Explorar canales</title>
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <div class="container">
+    <div class="topbar">
+      <div class="brand">📚 Directorio Telegram</div>
+      <a class="badge" href="index.html">Inicio</a>
+    </div>
+
+    <h2 style="margin:0 0 8px;">Canales aprobados</h2>
+    <p style="margin:0 0 16px; color: var(--muted);">
+      Busca por nombre, descripción o categoría.
+    </p>
+
+    <div class="search">
+      <input id="buscador" type="text" placeholder="Ej: estudio, memes, noticias, tecnología…">
+    </div>
+
+    <div class="topbar" style="margin-top: 0;">
+      <div class="badge" id="contador">Cargando…</div>
+      <a class="btn secondary" href="enviar.html">Enviar canal</a>
+    </div>
+
+    <div id="canales" class="grid"></div>
+    <div id="vacio" class="empty" style="display:none;">No hay resultados con esa búsqueda.</div>
+  </div>
+
+  <script src="js/app.js"></script>
+</body>
+</html>
 
