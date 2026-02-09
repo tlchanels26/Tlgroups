@@ -3,12 +3,119 @@ const API_URL = "https://script.google.com/macros/s/AKfycbwEEHPR3IzTnt9mh9-U5Afn
 
 let canalesData = [];
 
-function normalizar(s) {
-  return (s ?? "").toString().trim();
+function $(id) { return document.getElementById(id); }
+
+// Carga usando JSONP para evitar CORS
+function loadJSONP(url, callbackName) {
+  return new Promise((resolve, reject) => {
+    const script = document.createElement("script");
+    const sep = url.includes("?") ? "&" : "?";
+    script.src = `${url}${sep}callback=${callbackName}`;
+
+    script.onload = () => resolve(true);
+    script.onerror = () => reject(new Error("No se pudo cargar JSONP"));
+    document.body.appendChild(script);
+  });
 }
 
-function escapeHTML(str) {
-  return normalizar(str)
+// Esta función la llama Apps Script: callback(data)
+window.handleCanales = function (data) {
+  // si viene error desde el backend
+  if (data && data.error) {
+    mostrarError(data.error);
+    return;
+  }
+
+  canalesData = Array.isArray(data) ? data : [];
+  llenarCategorias(canalesData);
+  aplicarFiltros(); // render inicial
+};
+
+function llenarCategorias(lista) {
+  const sel = $("categoriaSelect");
+  if (!sel) return;
+
+  // categorías únicas
+  const set = new Set(
+    lista
+      .map(x => (x.categoria || "").trim())
+      .filter(x => x.length > 0)
+  );
+
+  const cats = Array.from(set).sort((a, b) => a.localeCompare(b, "es"));
+
+  // limpia opciones
+  sel.innerHTML = `<option value="">Todas las categorías</option>` +
+    cats.map(c => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join("");
+}
+
+function aplicarFiltros() {
+  const q = ($("buscador")?.value || "").toLowerCase().trim();
+  const catSel = ($("categoriaSelect")?.value || "").trim();
+
+  const filtrados = canalesData.filter(c => {
+    const nombre = (c.nombre || "").toLowerCase();
+    const desc = (c.descripcion || "").toLowerCase();
+    const cat = (c.categoria || "").toLowerCase();
+
+    const coincideTexto = !q || `${nombre} ${desc} ${cat}`.includes(q);
+    const coincideCat = !catSel || (c.categoria || "").trim() === catSel;
+
+    return coincideTexto && coincideCat;
+  });
+
+  render(filtrados);
+}
+
+function render(lista) {
+  const cont = $("canales");
+  const vacio = $("vacio");
+  const contador = $("contador");
+
+  if (contador) contador.textContent = `${lista.length} canal(es)`;
+  if (!cont) return;
+
+  cont.innerHTML = "";
+
+  if (!lista.length) {
+    if (vacio) vacio.style.display = "block";
+    return;
+  }
+  if (vacio) vacio.style.display = "none";
+
+  lista.forEach(c => {
+    const div = document.createElement("div");
+    div.className = "card";
+
+    div.innerHTML = `
+      <h3>${escapeHtml(c.nombre || "Canal sin nombre")}</h3>
+      <p>${escapeHtml(c.descripcion || "")}</p>
+      <div class="meta">
+        <span class="pill">${escapeHtml(c.categoria || "Sin categoría")}</span>
+      </div>
+      <div class="actions">
+        <a class="link" href="${escapeAttr(c.link || "#")}" target="_blank" rel="noopener">Unirse</a>
+      </div>
+    `;
+
+    cont.appendChild(div);
+  });
+}
+
+function mostrarError(msg) {
+  const contador = $("contador");
+  const vacio = $("vacio");
+
+  if (contador) contador.textContent = "Error";
+  if (vacio) {
+    vacio.style.display = "block";
+    vacio.textContent = "No se pudieron cargar los canales. " + msg;
+  }
+}
+
+// helpers seguros
+function escapeHtml(str) {
+  return String(str)
     .replaceAll("&", "&amp;")
     .replaceAll("<", "&lt;")
     .replaceAll(">", "&gt;")
@@ -16,134 +123,23 @@ function escapeHTML(str) {
     .replaceAll("'", "&#039;");
 }
 
-function setContador(texto) {
-  const el = document.getElementById("contador");
-  if (el) el.textContent = texto;
+function escapeAttr(str) {
+  // evita romper atributos
+  return escapeHtml(str).replaceAll(" ", "%20");
 }
 
-function setVacio(mensaje, mostrar) {
-  const vacio = document.getElementById("vacio");
-  if (!vacio) return;
-  vacio.textContent = mensaje || "";
-  vacio.style.display = mostrar ? "block" : "none";
-}
+// INIT
+document.addEventListener("DOMContentLoaded", async () => {
+  // eventos
+  const input = $("buscador");
+  const sel = $("categoriaSelect");
 
-function render(lista) {
-  const cont = document.getElementById("canales");
-  if (!cont) return;
+  if (input) input.addEventListener("input", aplicarFiltros);
+  if (sel) sel.addEventListener("change", aplicarFiltros);
 
-  cont.innerHTML = "";
-
-  setContador(`${lista.length} canal(es)`);
-
-  if (!lista.length) {
-    setVacio("No hay canales para mostrar.", true);
-    return;
-  }
-  setVacio("", false);
-
-  lista.forEach((c) => {
-    const nombre = escapeHTML(c.nombre || "Canal sin nombre");
-    const desc = escapeHTML(c.descripcion || "");
-    const cat = escapeHTML(c.categoria || "Sin categoría");
-    const link = normalizar(c.link || "");
-
-    const card = document.createElement("article");
-    card.className = "card";
-
-    card.innerHTML = `
-      <h3 class="card-title">${nombre}</h3>
-      ${desc ? `<p class="card-desc">${desc}</p>` : ""}
-      <div class="pill">${cat}</div>
-
-      <div class="actions">
-        <a class="btn btn-primary" href="${escapeHTML(link)}" target="_blank" rel="noopener">
-          Unirse
-        </a>
-      </div>
-    `;
-
-    cont.appendChild(card);
-  });
-}
-
-function setCategorias(lista) {
-  const sel = document.getElementById("categoriaSelect");
-  if (!sel) return;
-
-  const cats = Array.from(
-    new Set(lista.map((x) => normalizar(x.categoria)).filter(Boolean))
-  ).sort((a, b) => a.localeCompare(b, "es"));
-
-  const actual = sel.value;
-
-  sel.innerHTML = `<option value="">Todas las categorías</option>`;
-  cats.forEach((c) => {
-    const opt = document.createElement("option");
-    opt.value = c;
-    opt.textContent = c;
-    sel.appendChild(opt);
-  });
-
-  sel.value = actual;
-}
-
-function aplicarFiltros() {
-  const input = document.getElementById("buscador");
-  const sel = document.getElementById("categoriaSelect");
-
-  const q = (input?.value || "").trim().toLowerCase();
-  const catSel = (sel?.value || "").trim().toLowerCase();
-
-  const filtrados = canalesData.filter((c) => {
-    const nombre = (c.nombre || "").toLowerCase();
-    const desc = (c.descripcion || "").toLowerCase();
-    const cat = (c.categoria || "").toLowerCase();
-
-    const matchTexto = !q || (nombre + " " + desc + " " + cat).includes(q);
-    const matchCat = !catSel || cat === catSel;
-
-    return matchTexto && matchCat;
-  });
-
-  render(filtrados);
-}
-
-async function cargar() {
   try {
-    setContador("Cargando...");
-    setVacio("", false);
-
-    // Si la URL no termina en /exec, te va a fallar sí o sí
-    if (!API_URL.includes("/exec")) {
-      throw new Error("API_URL debe terminar en /exec");
-    }
-
-    const res = await fetch(API_URL, { method: "GET" });
-
-    if (!res.ok) {
-      throw new Error(`HTTP ${res.status}`);
-    }
-
-    const data = await res.json();
-
-    // Esperamos que sea un array
-    canalesData = Array.isArray(data) ? data : [];
-
-    setCategorias(canalesData);
-    aplicarFiltros(); // render inicial con filtros
-
-    // listeners
-    const input = document.getElementById("buscador");
-    const sel = document.getElementById("categoriaSelect");
-
-    if (input) input.addEventListener("input", aplicarFiltros);
-    if (sel) sel.addEventListener("change", aplicarFiltros);
+    await loadJSONP(API_URL, "handleCanales");
   } catch (err) {
-    console.error(err);
-    setContador("Error");
-    setVacio("No se pudieron cargar los canales.", true);
+    mostrarError("Revisa que el link /exec sea correcto y que esté implementado como 'Cualquiera'.");
   }
-}
-
-cargar();
+});
