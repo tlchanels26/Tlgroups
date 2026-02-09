@@ -1,66 +1,66 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Explorar - TL Channels</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Explorar - TL Channels</title>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
 
-    <nav class="navbar">
-        <a href="index.html"><i class="fas fa-home"></i> Inicio</a>
-        <a href="explorar.html" class="active"><i class="fas fa-compass"></i> Explorar</a>
-        <a href="enviar.html"><i class="fas fa-plus-circle"></i> Sugerir</a>
-    </nav>
+  <nav class="navbar">
+    <a href="index.html"><i class="fas fa-home"></i> Inicio</a>
+    <a href="explorar.html" class="active"><i class="fas fa-compass"></i> Explorar</a>
+    <a href="enviar.html"><i class="fas fa-plus-circle"></i> Sugerir</a>
+  </nav>
 
-    <header style="text-align:center; padding: 50px 20px;">
-        <h1 style="font-size: 2.5rem; color: white;">Directorio de Canales</h1>
-        <p style="color: var(--text-muted);">Encuentra tu próxima comunidad favorita</p>
-    </header>
+  <header class="page-header">
+    <h1>Directorio de Canales</h1>
+    <p>Encuentra tu próxima comunidad favorita</p>
+  </header>
 
-    <div class="search-container" style="max-width: 600px; margin: 0 auto 20px; padding: 0 20px;">
-        <input type="text" id="searchInput" placeholder="Buscar por nombre o palabra clave..." 
-        style="width: 100%; padding: 15px; border-radius: 15px; border: 1px solid var(--border); background: var(--bg-card); color: white; outline: none;">
+  <div class="search-container">
+    <input type="text" id="searchInput" placeholder="Buscar por nombre o palabra clave...">
+  </div>
+
+  <div class="filter-container">
+    <div class="filter-pill active" data-filter="todos">Todos</div>
+    <div class="filter-pill" data-filter="tecnologia">Tecnología</div>
+    <div class="filter-pill" data-filter="cine">Cine</div>
+    <div class="filter-pill" data-filter="finanzas">Finanzas</div>
+    <div class="filter-pill" data-filter="otros">Otros</div>
+  </div>
+
+  <main class="container" id="channelList">
+    <div class="channel-card" data-category="tecnologia">
+      <div class="card-top">
+        <div class="card-icon"><i class="fas fa-laptop-code"></i></div>
+        <span class="member-count"><i class="fas fa-users"></i> 15.8k</span>
+      </div>
+      <h3>Devs Hub</h3>
+      <p>Aprende programación desde cero con tutoriales diarios y retos de código.</p>
+      <a href="https://t.me/" class="btn-join" target="_blank" rel="noopener">Unirme</a>
     </div>
 
-    <div class="filter-container">
-        <div class="filter-pill active" data-filter="todos">Todos</div>
-        <div class="filter-pill" data-filter="tecnologia">Tecnología</div>
-        <div class="filter-pill" data-filter="cine">Cine</div>
-        <div class="filter-pill" data-filter="finanzas">Finanzas</div>
-        <div class="filter-pill" data-filter="otros">Otros</div>
+    <div class="channel-card" data-category="cine">
+      <div class="card-top">
+        <div class="card-icon"><i class="fas fa-popcorn"></i></div>
+        <span class="member-count"><i class="fas fa-users"></i> 42k</span>
+      </div>
+      <h3>Cine Estrenos</h3>
+      <p>Resúmenes de películas, trailers y noticias del mundo del séptimo arte.</p>
+      <a href="https://t.me/" class="btn-join" target="_blank" rel="noopener">Unirme</a>
     </div>
+  </main>
 
-    <main class="container" id="channelList">
-        <div class="channel-card" data-category="tecnologia">
-            <div class="card-top">
-                <div class="card-icon"><i class="fas fa-laptop-code"></i></div>
-                <span class="member-count"><i class="fas fa-users"></i> 15.8k</span>
-            </div>
-            <h3>Devs Hub</h3>
-            <p>Aprende programación desde cero con tutoriales diarios y retos de código.</p>
-            <a href="#" class="btn-join">Unirme</a>
-        </div>
+  <button id="scrollTopBtn" aria-label="Volver arriba"><i class="fas fa-arrow-up"></i></button>
 
-        <div class="channel-card" data-category="cine">
-            <div class="card-top">
-                <div class="card-icon"><i class="fas fa-popcorn"></i></div>
-                <span class="member-count"><i class="fas fa-users"></i> 42k</span>
-            </div>
-            <h3>Cine Estrenos</h3>
-            <p>Resúmenes de películas, trailers y noticias del mundo del séptimo arte.</p>
-            <a href="#" class="btn-join">Unirme</a>
-        </div>
-    </main>
+  <footer>
+    <p>&copy; 2024 TL Channels</p>
+  </footer>
 
-    <button id="scrollTopBtn"><i class="fas fa-arrow-up"></i></button>
-
-    <footer>
-        <p>&copy; 2024 TL Channels</p>
-    </footer>
-
-    <script src="js/app.js"></script>
+  <script src="js/app.js"></script>
 </body>
 </html>
