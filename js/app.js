@@ -1,94 +1,154 @@
-// ✅ Pega aquí tu URL REAL del Apps Script (debe terminar en /exec)
+// ✅ Tu URL real del Apps Script (termina en /exec)
 const API_URL = "https://script.google.com/macros/s/AKfycbwEEHPR3IzTnt9mh9-U5AfnBmmgBQ06D86mFVpcMdrHBqtRQ7UmTtiU9ix80sXQvAJlOg/exec";
 
-/***********************
- * API Canales Telegram
- * - Devuelve SOLO canales con estado = "aprobado"
- * - Devuelve JSON normal o JSONP (si viene ?callback=xxx)
- ************************/
+let canalesData = [];
 
+function $(id) { return document.getElementById(id); }
 
-  // ✅ 2) Nombre exacto de la pestaña
-  const SHEET_NAME = "Respuestas de formulario 1";
+function escapeHTML(str) {
+  return String(str ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
 
+function render(lista) {
+  const cont = $("canales");
+  const vacio = $("vacio");
+  const contador = $("contador");
+
+  if (!cont) return;
+
+  cont.innerHTML = "";
+  contador.textContent = `${lista.length} canal(es)`;
+
+  if (!lista.length) {
+    if (vacio) vacio.style.display = "block";
+    return;
+  }
+  if (vacio) vacio.style.display = "none";
+
+  lista.forEach(canal => {
+    const div = document.createElement("div");
+    div.className = "card";
+
+    const nombre = canal.nombre || "Canal sin nombre";
+    const desc = canal.descripcion || "";
+    const cat = canal.categoria || "Sin categoría";
+    const link = canal.link || "#";
+
+    div.innerHTML = `
+      <h3>${escapeHTML(nombre)}</h3>
+      <p>${escapeHTML(desc)}</p>
+      <div class="meta">
+        <span class="pill">${escapeHTML(cat)}</span>
+      </div>
+      <div class="actions">
+        <a class="link" href="${escapeHTML(link)}" target="_blank" rel="noopener">Unirse</a>
+      </div>
+    `;
+
+    cont.appendChild(div);
+  });
+}
+
+function llenarCategorias(lista) {
+  const sel = $("categoriaSelect");
+  if (!sel) return;
+
+  const cats = new Set();
+  lista.forEach(c => {
+    const cat = (c.categoria || "").trim();
+    if (cat) cats.add(cat);
+  });
+
+  const ordenadas = Array.from(cats).sort((a,b) => a.localeCompare(b));
+
+  sel.innerHTML = `<option value="">Todas las categorías</option>` +
+    ordenadas.map(c => `<option value="${escapeHTML(c)}">${escapeHTML(c)}</option>`).join("");
+}
+
+function aplicarFiltros() {
+  const q = ($("buscador")?.value || "").trim().toLowerCase();
+  const catSel = ($("categoriaSelect")?.value || "").trim().toLowerCase();
+
+  const filtrados = canalesData.filter(c => {
+    const nombre = (c.nombre || "").toLowerCase();
+    const desc = (c.descripcion || "").toLowerCase();
+    const cat = (c.categoria || "").toLowerCase();
+
+    // filtro categoría
+    if (catSel && cat !== catSel) return false;
+
+    // filtro texto
+    if (!q) return true;
+    return nombre.includes(q) || desc.includes(q) || cat.includes(q);
+  });
+
+  render(filtrados);
+}
+
+function jsonp(url) {
+  return new Promise((resolve, reject) => {
+    const cbName = "cb_" + Math.random().toString(36).slice(2);
+
+    window[cbName] = (data) => {
+      delete window[cbName];
+      script.remove();
+      resolve(data);
+    };
+
+    const script = document.createElement("script");
+    script.src = url + (url.includes("?") ? "&" : "?") + "callback=" + cbName;
+    script.onerror = () => {
+      delete window[cbName];
+      script.remove();
+      reject(new Error("No se pudo cargar el script JSONP"));
+    };
+
+    document.body.appendChild(script);
+  });
+}
+
+async function cargar() {
   try {
-    const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
-    const sh = ss.getSheetByName(SHEET_NAME);
-
-    if (!sh) {
-      return salida_(e, { error: "No existe la hoja: " + SHEET_NAME });
+    $("contador").textContent = "Cargando...";
+    if ($("vacio")) {
+      $("vacio").style.display = "block";
+      $("vacio").textContent = "Cargando...";
     }
 
-    const data = sh.getDataRange().getValues();
-    if (data.length < 2) return salida_(e, []); // No hay filas
+    const data = await jsonp(API_URL);
 
-    // --- Normaliza encabezados ---
-    const headers = data[0].map(h =>
-      String(h || "")
-        .toLowerCase()
-        .normalize("NFD").replace(/[\u0300-\u036f]/g, "") // quita tildes
-        .replace(/[^a-z0-9 ]/g, "")                      // quita símbolos
-        .trim()
-    );
-
-    // Encuentra columna si el encabezado la "incluye"
-    const col = (name) => headers.findIndex(h => h.includes(name));
-
-    const cEstado = col("estado");
-    const cNombre = col("nombre del canal");
-    const cDesc   = col("descripcion del canal");
-    const cCat    = col("categoria");
-    const cLink   = col("link"); // agarra "link del canal..." o similar
-
-    if ([cEstado, cNombre, cDesc, cCat, cLink].some(i => i === -1)) {
-      return salida_(e, {
-        error:
-          "Faltan columnas. Encabezados detectados: " +
-          JSON.stringify(headers)
-      });
+    // Si Apps Script devolvió error
+    if (data && data.error) {
+      $("contador").textContent = "Error";
+      if ($("vacio")) $("vacio").textContent = data.error;
+      return;
     }
 
-    const out = [];
+    canalesData = Array.isArray(data) ? data : [];
+    llenarCategorias(canalesData);
+    aplicarFiltros();
 
-    for (let i = 1; i < data.length; i++) {
-      const row = data[i];
-
-      const estado = String(row[cEstado] || "").toLowerCase().trim();
-      if (estado !== "aprobado") continue;
-
-      const nombre = String(row[cNombre] || "").trim();
-      const descripcion = String(row[cDesc] || "").trim();
-      const categoria = String(row[cCat] || "").trim();
-      const link = String(row[cLink] || "").trim();
-
-      // Solo links de Telegram
-      if (!link.startsWith("https://t.me/")) continue;
-
-      out.push({ nombre, descripcion, categoria, link });
+    if (!canalesData.length && $("vacio")) {
+      $("vacio").style.display = "block";
+      $("vacio").textContent = "No hay canales para mostrar.";
     }
-
-    return salida_(e, out);
-
-  } catch (err) {
-    return salida_(e, { error: "Error en Apps Script: " + err.message });
+  } catch (e) {
+    $("contador").textContent = "Error";
+    if ($("vacio")) {
+      $("vacio").style.display = "block";
+      $("vacio").textContent = "No se pudieron cargar los canales.";
+    }
+    console.error(e);
   }
 }
 
-/**
- * Devuelve JSON o JSONP:
- * - Si viene ?callback=handleCanales => handleCanales([...]);
- * - Si no viene callback => JSON normal
- */
-function salida_(e, data) {
-  const cb = e && e.parameter && e.parameter.callback;
-
-  if (cb) {
-    return ContentService
-      .createTextOutput(`${cb}(${JSON.stringify(data)});`)
-      .setMimeType(ContentService.MimeType.JAVASCRIPT);
-  }
-
-  return ContentService
-    .createTextOutput(JSON.stringify(data))
-    .setMimeType(ContentService.MimeType.JSON);
-}
+document.addEventListener("DOMContentLoaded", () => {
+  $("buscador")?.addEventListener("input", aplicarFiltros);
+  $("categoriaSelect")?.addEventListener("change", aplicarFiltros);
+  cargar();
+});
