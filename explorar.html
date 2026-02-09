@@ -5,63 +5,78 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Explorar - TL Channels</title>
 
+  <!-- Font Awesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <!-- CSS principal -->
   <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
 
+  <!-- NAVBAR -->
   <nav class="navbar">
     <a href="index.html"><i class="fas fa-home"></i> Inicio</a>
     <a href="explorar.html" class="active"><i class="fas fa-compass"></i> Explorar</a>
     <a href="enviar.html"><i class="fas fa-plus-circle"></i> Sugerir</a>
   </nav>
 
+  <!-- HEADER -->
   <header class="page-header">
-    <h1>TL Channels</h1>
-    <p>Encuentra tu próxima comunidad favorita</p>
+    <h1>Directorio de Canales</h1>
+    <p>Encuentra tu próxima comunidad en Telegram</p>
   </header>
 
+  <!-- BUSCADOR -->
   <div class="search-container">
-    <input type="text" id="searchInput" placeholder="Buscar por nombre o palabra clave...">
+    <input
+      type="text"
+      id="searchInput"
+      placeholder="Buscar por nombre o descripción…"
+      aria-label="Buscar canales"
+    >
   </div>
 
+  <!-- FILTROS -->
   <div class="filter-container">
     <div class="filter-pill active" data-filter="todos">Todos</div>
-    <div class="filter-pill" data-filter="tecnologia">Tecnología</div>
-    <div class="filter-pill" data-filter="cine">Cine</div>
-    <div class="filter-pill" data-filter="finanzas">Finanzas</div>
-    <div class="filter-pill" data-filter="adultos">+18</div>
-     <div class="filter-pill" data-filter="amistad">Amistad</div>
+
+    <div class="filter-pill" data-filter="tecnologia">
+      <i class="fas fa-laptop-code"></i> Tecnología
+    </div>
+
+    <div class="filter-pill" data-filter="cine">
+      <i class="fas fa-film"></i> Cine
+    </div>
+
+    <div class="filter-pill" data-filter="finanzas">
+      <i class="fas fa-chart-line"></i> Finanzas
+    </div>
+
+    <div class="filter-pill" data-filter="adultos">
+      <i class="fas fa-triangle-exclamation"></i> +18
+    </div>
+
+    <div class="filter-pill" data-filter="otros">
+      <i class="fas fa-layer-group"></i> Otros
+    </div>
   </div>
 
-  <main class="container" id="channelList">
-    <div class="channel-card" data-category="tecnologia">
-      <div class="card-top">
-        <div class="card-icon"><i class="fas fa-laptop-code"></i></div>
-        <span class="member-count"><i class="fas fa-users"></i> 15.8k</span>
-      </div>
-      <h3>Devs Hub</h3>
-      <p>Aprende programación desde cero con tutoriales diarios y retos de código.</p>
-      <a href="https://t.me/" class="btn-join" target="_blank" rel="noopener">Unirme</a>
-    </div>
-
-    <div class="channel-card" data-category="cine">
-      <div class="card-top">
-        <div class="card-icon"><i class="fas fa-popcorn"></i></div>
-        <span class="member-count"><i class="fas fa-users"></i> 42k</span>
-      </div>
-      <h3>Cine Estrenos</h3>
-      <p>Resúmenes de películas, trailers y noticias del mundo del séptimo arte.</p>
-      <a href="https://t.me/" class="btn-join" target="_blank" rel="noopener">Unirme</a>
-    </div>
+  <!-- LISTADO DE CANALES (SE LLENA CON JS) -->
+  <main class="container" id="channelList" aria-live="polite">
+    <!-- Las cards se generan automáticamente -->
   </main>
 
-  <button id="scrollTopBtn" aria-label="Volver arriba"><i class="fas fa-arrow-up"></i></button>
+  <!-- BOTÓN VOLVER ARRIBA -->
+  <button id="scrollTopBtn" aria-label="Volver arriba">
+    <i class="fas fa-arrow-up"></i>
+  </button>
 
+  <!-- FOOTER -->
   <footer>
     <p>&copy; 2024 TL Channels</p>
   </footer>
 
+  <!-- JS -->
   <script src="js/app.js"></script>
 </body>
 </html>
