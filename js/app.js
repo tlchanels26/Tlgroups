@@ -1,44 +1,51 @@
 document.addEventListener('DOMContentLoaded', () => {
     const searchInput = document.getElementById('searchInput');
+    const filterPills = document.querySelectorAll('.filter-pill');
     const cards = document.querySelectorAll('.channel-card');
-    const badges = document.querySelectorAll('.badge'); // Seleccionamos las etiquetas
+    const scrollTopBtn = document.getElementById('scrollTopBtn');
 
-    // Función principal de filtrado
-    function filterChannels(term) {
+    // Función de filtrado combinada
+    function filterContent() {
+        const searchTerm = searchInput.value.toLowerCase();
+        const activeCategory = document.querySelector('.filter-pill.active').dataset.filter;
+
         cards.forEach(card => {
             const title = card.querySelector('h3').innerText.toLowerCase();
-            const desc = card.querySelector('p').innerText.toLowerCase();
-            const badge = card.querySelector('.badge').innerText.toLowerCase();
+            const category = card.dataset.category;
+            const matchesSearch = title.includes(searchTerm);
+            const matchesCategory = activeCategory === 'todos' || category === activeCategory;
 
-            if (title.includes(term) || desc.includes(term) || badge.includes(term)) {
+            if (matchesSearch && matchesCategory) {
                 card.style.display = "flex";
-                // Pequeña animación de aparición
-                card.style.opacity = "1";
-                card.style.transform = "translateY(0)";
             } else {
                 card.style.display = "none";
-                card.style.opacity = "0";
             }
         });
     }
 
-    // 1. Evento al escribir en el buscador
-    if (searchInput) {
-        searchInput.addEventListener('input', (e) => {
-            filterChannels(e.target.value.toLowerCase());
-        });
-    }
+    // Evento buscador
+    searchInput.addEventListener('input', filterContent);
 
-    // 2. Evento al hacer clic en las etiquetas (Badges)
-    badges.forEach(badge => {
-        badge.addEventListener('click', () => {
-            const category = badge.innerText.toLowerCase();
-            // Escribimos la categoría en el buscador
-            searchInput.value = category;
-            // Ejecutamos el filtro
-            filterChannels(category);
-            // Efecto visual en el buscador para que se note el cambio
-            searchInput.focus();
+    // Evento botones de categoría
+    filterPills.forEach(pill => {
+        pill.addEventListener('click', () => {
+            filterPills.forEach(p => p.classList.remove('active'));
+            pill.classList.add('active');
+            filterContent();
         });
+    });
+
+    // Mostrar/Ocultar botón Volver Arriba
+    window.addEventListener('scroll', () => {
+        if (window.scrollY > 300) {
+            scrollTopBtn.style.display = "block";
+        } else {
+            scrollTopBtn.style.display = "none";
+        }
+    });
+
+    // Acción Volver Arriba
+    scrollTopBtn.addEventListener('click', () => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     });
 });
