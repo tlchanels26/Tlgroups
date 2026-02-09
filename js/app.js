@@ -1,84 +1,89 @@
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+  const container = document.getElementById('channelList');
   const searchInput = document.getElementById('searchInput');
   const filterPills = document.querySelectorAll('.filter-pill');
-  const cards = document.querySelectorAll('.channel-card');
   const scrollTopBtn = document.getElementById('scrollTopBtn');
 
-  // Si no hay cards, no hay nada que filtrar
-  if (!cards.length) return;
+  if (!container) return;
 
-  // Mensaje opcional cuando no hay resultados
-  let emptyMsg = document.getElementById('emptyMsg');
-  if (!emptyMsg) {
-    emptyMsg = document.createElement('div');
-    emptyMsg.id = 'emptyMsg';
-    emptyMsg.style.display = 'none';
-    emptyMsg.style.textAlign = 'center';
-    emptyMsg.style.padding = '20px';
-    emptyMsg.style.opacity = '0.8';
-    emptyMsg.textContent = 'No se encontraron resultados 😕';
-    cards[0].parentElement.appendChild(emptyMsg);
+  let channels = [];
+
+  // 1️⃣ Cargar JSON
+  try {
+    const res = await fetch('data/channels.json');
+    channels = await res.json();
+  } catch (err) {
+    container.innerHTML = '<p style="text-align:center;">Error cargando canales</p>';
+    return;
   }
 
-  function getActiveCategory() {
-    const active = document.querySelector('.filter-pill.active');
-    return active ? active.dataset.filter : 'todos';
-  }
+  // 2️⃣ Solo aprobados
+  channels = channels.filter(c => c.estado === 'Aprobado');
 
-  function filterContent() {
-    const searchTerm = (searchInput?.value || '').toLowerCase().trim();
-    const activeCategory = getActiveCategory();
+  function render(list) {
+    container.innerHTML = '';
 
-    let visibleCount = 0;
+    if (!list.length) {
+      container.innerHTML = '<p style="text-align:center;">No hay resultados 😕</p>';
+      return;
+    }
 
-    cards.forEach(card => {
-      const title = (card.querySelector('h3')?.textContent || '').toLowerCase();
-      const desc = (card.querySelector('p')?.textContent || '').toLowerCase();
-      const category = card.dataset.category || '';
+    list.forEach(c => {
+      const card = document.createElement('div');
+      card.className = 'channel-card';
+      card.dataset.category = c.categoria;
 
-      const matchesSearch =
-        !searchTerm || title.includes(searchTerm) || desc.includes(searchTerm);
+      card.innerHTML = `
+        <div class="card-top">
+          <div class="card-icon">
+            <i class="fas fa-${c.icono}"></i>
+          </div>
+          <span class="member-count">
+            <i class="fas fa-users"></i> ${(c.miembros / 1000).toFixed(1)}k
+          </span>
+        </div>
+        <h3>${c.nombre}</h3>
+        <p>${c.descripcion}</p>
+        <a href="${c.link}" target="_blank" class="btn-join">Unirme</a>
+      `;
 
-      const matchesCategory =
-        activeCategory === 'todos' || category === activeCategory;
-
-      const show = matchesSearch && matchesCategory;
-
-      card.style.display = show ? 'flex' : 'none';
-      if (show) visibleCount++;
-    });
-
-    emptyMsg.style.display = visibleCount === 0 ? 'block' : 'none';
-  }
-
-  // Evento buscador
-  if (searchInput) {
-    searchInput.addEventListener('input', filterContent);
-  }
-
-  // Evento botones de categoría
-  if (filterPills.length) {
-    filterPills.forEach(pill => {
-      pill.addEventListener('click', () => {
-        filterPills.forEach(p => p.classList.remove('active'));
-        pill.classList.add('active');
-        filterContent();
-      });
+      container.appendChild(card);
     });
   }
 
-  // Mostrar/Ocultar botón Volver Arriba
-  if (scrollTopBtn) {
-    window.addEventListener('scroll', () => {
-      scrollTopBtn.style.display = window.scrollY > 300 ? 'block' : 'none';
-    });
+  render(channels);
 
-    // Acción Volver Arriba
-    scrollTopBtn.addEventListener('click', () => {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    });
-  }
+  // 🔍 Buscador
+  searchInput.addEventListener('input', () => {
+    const q = searchInput.value.toLowerCase();
+    render(
+      channels.filter(c =>
+        c.nombre.toLowerCase().includes(q) ||
+        c.descripcion.toLowerCase().includes(q)
+      )
+    );
+  });
 
-  // Ejecutar filtro al cargar (por si hay pill activa o input con valor)
-  filterContent();
+  // 🏷️ Filtros
+  filterPills.forEach(pill => {
+    pill.addEventListener('click', () => {
+      filterPills.forEach(p => p.classList.remove('active'));
+      pill.classList.add('active');
+
+      const cat = pill.dataset.filter;
+      render(cat === 'todos'
+        ? channels
+        : channels.filter(c => c.categoria === cat)
+      );
+    });
+  });
+
+  // ⬆️ Scroll top
+  window.addEventListener('scroll', () => {
+    scrollTopBtn.style.display = window.scrollY > 300 ? 'block' : 'none';
+  });
+
+  scrollTopBtn.addEventListener('click', () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
 });
