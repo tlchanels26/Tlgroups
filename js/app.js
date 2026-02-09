@@ -1,145 +1,94 @@
 // ✅ Pega aquí tu URL REAL del Apps Script (debe terminar en /exec)
 const API_URL = "https://script.google.com/macros/s/AKfycbwEEHPR3IzTnt9mh9-U5AfnBmmgBQ06D86mFVpcMdrHBqtRQ7UmTtiU9ix80sXQvAJlOg/exec";
 
-let canalesData = [];
+/***********************
+ * API Canales Telegram
+ * - Devuelve SOLO canales con estado = "aprobado"
+ * - Devuelve JSON normal o JSONP (si viene ?callback=xxx)
+ ************************/
 
-function $(id) { return document.getElementById(id); }
 
-// Carga usando JSONP para evitar CORS
-function loadJSONP(url, callbackName) {
-  return new Promise((resolve, reject) => {
-    const script = document.createElement("script");
-    const sep = url.includes("?") ? "&" : "?";
-    script.src = `${url}${sep}callback=${callbackName}`;
-
-    script.onload = () => resolve(true);
-    script.onerror = () => reject(new Error("No se pudo cargar JSONP"));
-    document.body.appendChild(script);
-  });
-}
-
-// Esta función la llama Apps Script: callback(data)
-window.handleCanales = function (data) {
-  // si viene error desde el backend
-  if (data && data.error) {
-    mostrarError(data.error);
-    return;
-  }
-
-  canalesData = Array.isArray(data) ? data : [];
-  llenarCategorias(canalesData);
-  aplicarFiltros(); // render inicial
-};
-
-function llenarCategorias(lista) {
-  const sel = $("categoriaSelect");
-  if (!sel) return;
-
-  // categorías únicas
-  const set = new Set(
-    lista
-      .map(x => (x.categoria || "").trim())
-      .filter(x => x.length > 0)
-  );
-
-  const cats = Array.from(set).sort((a, b) => a.localeCompare(b, "es"));
-
-  // limpia opciones
-  sel.innerHTML = `<option value="">Todas las categorías</option>` +
-    cats.map(c => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join("");
-}
-
-function aplicarFiltros() {
-  const q = ($("buscador")?.value || "").toLowerCase().trim();
-  const catSel = ($("categoriaSelect")?.value || "").trim();
-
-  const filtrados = canalesData.filter(c => {
-    const nombre = (c.nombre || "").toLowerCase();
-    const desc = (c.descripcion || "").toLowerCase();
-    const cat = (c.categoria || "").toLowerCase();
-
-    const coincideTexto = !q || `${nombre} ${desc} ${cat}`.includes(q);
-    const coincideCat = !catSel || (c.categoria || "").trim() === catSel;
-
-    return coincideTexto && coincideCat;
-  });
-
-  render(filtrados);
-}
-
-function render(lista) {
-  const cont = $("canales");
-  const vacio = $("vacio");
-  const contador = $("contador");
-
-  if (contador) contador.textContent = `${lista.length} canal(es)`;
-  if (!cont) return;
-
-  cont.innerHTML = "";
-
-  if (!lista.length) {
-    if (vacio) vacio.style.display = "block";
-    return;
-  }
-  if (vacio) vacio.style.display = "none";
-
-  lista.forEach(c => {
-    const div = document.createElement("div");
-    div.className = "card";
-
-    div.innerHTML = `
-      <h3>${escapeHtml(c.nombre || "Canal sin nombre")}</h3>
-      <p>${escapeHtml(c.descripcion || "")}</p>
-      <div class="meta">
-        <span class="pill">${escapeHtml(c.categoria || "Sin categoría")}</span>
-      </div>
-      <div class="actions">
-        <a class="link" href="${escapeAttr(c.link || "#")}" target="_blank" rel="noopener">Unirse</a>
-      </div>
-    `;
-
-    cont.appendChild(div);
-  });
-}
-
-function mostrarError(msg) {
-  const contador = $("contador");
-  const vacio = $("vacio");
-
-  if (contador) contador.textContent = "Error";
-  if (vacio) {
-    vacio.style.display = "block";
-    vacio.textContent = "No se pudieron cargar los canales. " + msg;
-  }
-}
-
-// helpers seguros
-function escapeHtml(str) {
-  return String(str)
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
-}
-
-function escapeAttr(str) {
-  // evita romper atributos
-  return escapeHtml(str).replaceAll(" ", "%20");
-}
-
-// INIT
-document.addEventListener("DOMContentLoaded", async () => {
-  // eventos
-  const input = $("buscador");
-  const sel = $("categoriaSelect");
-
-  if (input) input.addEventListener("input", aplicarFiltros);
-  if (sel) sel.addEventListener("change", aplicarFiltros);
+  // ✅ 2) Nombre exacto de la pestaña
+  const SHEET_NAME = "Respuestas de formulario 1";
 
   try {
-    await loadJSONP(API_URL, "handleCanales");
+    const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+    const sh = ss.getSheetByName(SHEET_NAME);
+
+    if (!sh) {
+      return salida_(e, { error: "No existe la hoja: " + SHEET_NAME });
+    }
+
+    const data = sh.getDataRange().getValues();
+    if (data.length < 2) return salida_(e, []); // No hay filas
+
+    // --- Normaliza encabezados ---
+    const headers = data[0].map(h =>
+      String(h || "")
+        .toLowerCase()
+        .normalize("NFD").replace(/[\u0300-\u036f]/g, "") // quita tildes
+        .replace(/[^a-z0-9 ]/g, "")                      // quita símbolos
+        .trim()
+    );
+
+    // Encuentra columna si el encabezado la "incluye"
+    const col = (name) => headers.findIndex(h => h.includes(name));
+
+    const cEstado = col("estado");
+    const cNombre = col("nombre del canal");
+    const cDesc   = col("descripcion del canal");
+    const cCat    = col("categoria");
+    const cLink   = col("link"); // agarra "link del canal..." o similar
+
+    if ([cEstado, cNombre, cDesc, cCat, cLink].some(i => i === -1)) {
+      return salida_(e, {
+        error:
+          "Faltan columnas. Encabezados detectados: " +
+          JSON.stringify(headers)
+      });
+    }
+
+    const out = [];
+
+    for (let i = 1; i < data.length; i++) {
+      const row = data[i];
+
+      const estado = String(row[cEstado] || "").toLowerCase().trim();
+      if (estado !== "aprobado") continue;
+
+      const nombre = String(row[cNombre] || "").trim();
+      const descripcion = String(row[cDesc] || "").trim();
+      const categoria = String(row[cCat] || "").trim();
+      const link = String(row[cLink] || "").trim();
+
+      // Solo links de Telegram
+      if (!link.startsWith("https://t.me/")) continue;
+
+      out.push({ nombre, descripcion, categoria, link });
+    }
+
+    return salida_(e, out);
+
   } catch (err) {
-    mostrarError("Revisa que el link /exec sea correcto y que esté implementado como 'Cualquiera'.");
+    return salida_(e, { error: "Error en Apps Script: " + err.message });
   }
-});
+}
+
+/**
+ * Devuelve JSON o JSONP:
+ * - Si viene ?callback=handleCanales => handleCanales([...]);
+ * - Si no viene callback => JSON normal
+ */
+function salida_(e, data) {
+  const cb = e && e.parameter && e.parameter.callback;
+
+  if (cb) {
+    return ContentService
+      .createTextOutput(`${cb}(${JSON.stringify(data)});`)
+      .setMimeType(ContentService.MimeType.JAVASCRIPT);
+  }
+
+  return ContentService
+    .createTextOutput(JSON.stringify(data))
+    .setMimeType(ContentService.MimeType.JSON);
+}
