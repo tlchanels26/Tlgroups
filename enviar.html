@@ -1,37 +1,36 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Enviar canal</title>
-  <link rel="stylesheet" href="css/styles.css" />
+    <meta charset="UTF-8">
+    <title>Enviar Canal - TL Channels</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <div class="container">
-    <div class="topbar">
-      <div class="brand">➕ Enviar canal</div>
-      <a class="badge" href="explorar.html">Explorar</a>
+    <header>
+        <h1>Sugerir Nuevo Canal</h1>
+        <nav><a href="explorar.html" style="color: white;">Volver a Explorar</a></nav>
+    </header>
+
+    <div class="form-container">
+        <form action="https://formspree.io/f/TU_ID_AQUI" method="POST">
+            <label>Nombre del Canal:</label>
+            <input type="text" name="nombre" required>
+
+            <label>Enlace (@usuario o link):</label>
+            <input type="text" name="link" required>
+
+            <label>Categoría:</label>
+            <select name="categoria">
+                <option value="tecnologia">Tecnología</option>
+                <option value="entretenimiento">Entretenimiento</option>
+                <option value="educacion">Educación</option>
+            </select>
+
+            <label>Descripción:</label>
+            <textarea name="descripcion" rows="4"></textarea>
+
+            <button type="submit" class="btn-join" style="border:none; width:100%; cursor:pointer;">Enviar para Revisión</button>
+        </form>
     </div>
-
-    <h2 style="margin:0 0 8px;">Envía tu canal</h2>
-    <p style="margin:0 0 16px; color: var(--muted);">
-      No necesitas cuenta. Todos los envíos pasan por revisión antes de publicarse.
-    </p>
-
-    <div class="card" style="padding:0; overflow:hidden;">
-      <iframe
-        src="PEGA_AQUI_TU_LINK_DE_GOOGLE_FORM"
-        width="100%"
-        height="760"
-        frameborder="0"
-        style="border:0; display:block;"
-      ></iframe>
-    </div>
-
-    <p style="margin-top:14px; color: var(--muted); font-size: 13px;">
-      Reglas: no spam, no estafas, no enlaces acortados. Contenido +18 debe marcarse.
-    </p>
-  </div>
 </body>
 </html>
-
