@@ -1,100 +1,36 @@
-:root {
-    --tg-blue: #0088cc;
-    --tg-dark: #1d2733;
-    --bg-light: #f4f4f9;
-    --text-main: #333;
-}
-
-body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: var(--bg-light);
-    color: var(--text-main);
-    margin: 0;
-}
-
-header {
-    background: var(--tg-blue);
-    color: white;
-    padding: 2rem;
-    text-align: center;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-}
-
-.search-container {
-    max-width: 800px;
-    margin: 20px auto;
-    padding: 0 20px;
-}
-
-#searchInput {
-    width: 100%;
-    padding: 12px;
-    border: 2px solid #ddd;
-    border-radius: 25px;
-    font-size: 16px;
-    outline: none;
-    transition: border-color 0.3s;
-}
-
-#searchInput:focus {
-    border-color: var(--tg-blue);
-}
-
-.container {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 20px;
-    padding: 20px;
-    max-width: 1200px;
-    margin: 0 auto;
-}
-
-.channel-card {
-    background: white;
-    border-radius: 12px;
-    padding: 20px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+/* Estilos para la Navegación */
+.navbar {
+    background-color: #1a232e; /* Un tono más oscuro para contraste */
+    padding: 15px 0;
     display: flex;
-    flex-direction: column;
-    justify-content: space-between;
+    justify-content: center;
+    gap: 25px;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
 }
 
-.channel-card h3 { margin: 0 0 10px 0; color: var(--tg-blue); }
-
-.badge {
-    background: #e1effe;
-    color: var(--tg-blue);
-    padding: 4px 10px;
-    border-radius: 15px;
-    font-size: 0.8rem;
-    font-weight: bold;
-}
-
-.btn-join {
-    display: block;
-    text-align: center;
-    background: var(--tg-blue);
-    color: white;
+.navbar a {
+    color: #ffffff;
     text-decoration: none;
-    padding: 10px;
-    border-radius: 8px;
-    margin-top: 15px;
-    font-weight: bold;
+    font-weight: 600;
+    font-size: 1rem;
+    transition: color 0.3s;
+    padding: 5px 10px;
 }
 
-/* Estilo para el formulario en enviar.html */
-.form-container {
-    max-width: 500px;
-    margin: 40px auto;
-    background: white;
-    padding: 30px;
-    border-radius: 10px;
+.navbar a:hover {
+    color: #0088cc;
 }
 
-input, textarea, select {
-    width: 100%;
-    margin-bottom: 15px;
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
+/* Clase para resaltar en qué página estamos */
+.navbar a.active {
+    border-bottom: 2px solid #0088cc;
+    color: #0088cc;
+}
+
+@media (max-width: 600px) {
+    .navbar {
+        gap: 15px;
+    }
 }
