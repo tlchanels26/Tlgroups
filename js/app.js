@@ -10,7 +10,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // 1️⃣ Cargar JSON
   try {
-    const res = await fetch('data/channels.json');
+    const res = await fetch('https://drive.google.com/uc?export=download&id=11Xo3rZrnzOSb3JCmUs5IFK36MwQ-Irqx');
+
     channels = await res.json();
   } catch (err) {
     container.innerHTML = '<p style="text-align:center;">Error cargando canales</p>';
