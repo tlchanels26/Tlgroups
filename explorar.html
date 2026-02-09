@@ -1,53 +1,31 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Canales aprobados - Directorio Telegram</title>
-  <link rel="stylesheet" href="css/styles.css" />
+    <meta charset="UTF-8">
+    <title>Explorar - TL Channels</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
-
 <body>
-  <header class="top">
-    <div class="brand">
-      <div class="logo">📚</div>
-      <div>
-        <div class="title">Directorio Telegram</div>
-        <a class="link" href="index.html">Inicio</a>
-      </div>
-    </div>
-  </header>
+    <header>
+        <h1>Comunidad TL Channels</h1>
+        <nav><a href="enviar.html" style="color: white;">Sugerir Canal</a></nav>
+    </header>
 
-  <main class="container">
-    <h1>Canales aprobados</h1>
-    <p class="muted">Busca por nombre, descripción o categoría.</p>
-
-    <div class="filters">
-      <input
-        id="buscador"
-        class="input"
-        type="search"
-        placeholder="Ej: estudio, memes, noticias, tec"
-        autocomplete="off"
-      />
-
-      <select id="categoriaSelect" class="select">
-        <option value="">Todas las categorías</option>
-      </select>
+    <div class="search-container">
+        <input type="text" id="searchInput" placeholder="Buscar canales por nombre o etiquetas...">
     </div>
 
-    <div class="row">
-      <div class="counter">
-        <b id="contador">Cargando...</b>
-      </div>
+    <main class="container">
+        <div class="channel-card">
+            <div>
+                <span class="badge">Tecnología</span>
+                <h3>Dev Telegram</h3>
+                <p>Noticias sobre programación y bots.</p>
+            </div>
+            <a href="#" class="btn-join">Unirse</a>
+        </div>
+        </main>
 
-      <a class="btn" href="enviar.html">Enviar canal</a>
-    </div>
-
-    <div id="vacio" class="empty" style="display:none;"></div>
-    <section id="canales" class="grid"></section>
-  </main>
-
-  <script src="js/app.js"></script>
+    <script src="app.js"></script>
 </body>
 </html>
