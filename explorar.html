@@ -2,36 +2,42 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Explorar - TL Channels</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Explorar Canales - TL Channels</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+
+    <nav class="navbar">
+        <a href="explorar.html" class="active">🔍 Explorar</a>
+        <a href="enviar.html">➕ Sugerir Canal</a>
+    </nav>
+
     <header>
-        <h1>Comunidad TL Channels</h1>
-        <nav><a href="enviar.html" style="color: white;">Sugerir Canal</a></nav>
+        <h1>TL Channels</h1>
+        <p>Encuentra los mejores grupos y canales de Telegram</p>
     </header>
 
     <div class="search-container">
-        <input type="text" id="searchInput" placeholder="Buscar canales por nombre o etiquetas...">
+        <input type="text" id="searchInput" placeholder="Escribe para buscar...">
     </div>
 
     <main class="container">
         <div class="channel-card">
-            <div>
-                <span class="badge">Tecnología</span>
-                <h3>Dev Telegram</h3>
-                <p>Noticias sobre programación y bots.</p>
-            </div>
-            <a href="#" class="btn-join">Unirse</a>
+            <span class="badge">Tecnología</span>
+            <h3>Programación Web</h3>
+            <p>Recursos diarios sobre HTML, CSS y JavaScript para principiantes.</p>
+            <a href="https://t.me/ejemplo" class="btn-join">Unirse al Canal</a>
         </div>
-        </main>
+
+        <div class="channel-card">
+            <span class="badge">Cine</span>
+            <h3>Películas HD</h3>
+            <p>Reseñas de los últimos estrenos y noticias de Hollywood.</p>
+            <a href="https://t.me/ejemplo" class="btn-join">Unirse al Canal</a>
+        </div>
+    </main>
 
     <script src="app.js"></script>
 </body>
-
-    <nav class="navbar">
-    <a href="explorar.html" class="active">🔍 Explorar</a>
-    <a href="enviar.html">➕ Sugerir Canal</a>
-    <a href="#">📢 Contacto</a>
-</nav>
 </html>
