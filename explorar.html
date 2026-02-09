@@ -3,86 +3,64 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TL Channels - Explorar</title>
+    <title>Explorar - TL Channels</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
     <nav class="navbar">
+        <a href="index.html"><i class="fas fa-home"></i> Inicio</a>
         <a href="explorar.html" class="active"><i class="fas fa-compass"></i> Explorar</a>
         <a href="enviar.html"><i class="fas fa-plus-circle"></i> Sugerir</a>
-        <a href="#"><i class="fas fa-envelope"></i> Contacto</a>
     </nav>
 
-    <header>
-        <h1>TL Channels</h1>
-        <p>Descubre. Únete. Crece.</p>
+    <header style="text-align:center; padding: 50px 20px;">
+        <h1 style="font-size: 2.5rem; color: white;">Directorio de Canales</h1>
+        <p style="color: var(--text-muted);">Encuentra tu próxima comunidad favorita</p>
     </header>
 
-    <div class="search-container">
-        <div class="search-wrapper">
-            <i class="fas fa-search search-icon"></i>
-            <input type="text" id="searchInput" placeholder="Busca canales de tecnología, cine, etc...">
-        </div>
+    <div class="search-container" style="max-width: 600px; margin: 0 auto 20px; padding: 0 20px;">
+        <input type="text" id="searchInput" placeholder="Buscar por nombre o palabra clave..." 
+        style="width: 100%; padding: 15px; border-radius: 15px; border: 1px solid var(--border); background: var(--bg-card); color: white; outline: none;">
+    </div>
+
+    <div class="filter-container">
+        <div class="filter-pill active" data-filter="todos">Todos</div>
+        <div class="filter-pill" data-filter="tecnologia">Tecnología</div>
+        <div class="filter-pill" data-filter="cine">Cine</div>
+        <div class="filter-pill" data-filter="finanzas">Finanzas</div>
+        <div class="filter-pill" data-filter="otros">Otros</div>
     </div>
 
     <main class="container" id="channelList">
-        
-        <div class="channel-card">
-            <span class="badge">Tecnología</span>
-            <div class="card-header">
-                <div class="card-icon"><i class="fas fa-code"></i></div>
-                <h3>Devs Hub</h3>
+        <div class="channel-card" data-category="tecnologia">
+            <div class="card-top">
+                <div class="card-icon"><i class="fas fa-laptop-code"></i></div>
+                <span class="member-count"><i class="fas fa-users"></i> 15.8k</span>
             </div>
-            <p>Comunidad para desarrolladores. JavaScript, Python y Open Source.</p>
-            <a href="https://t.me/ejemplo" class="btn-join" target="_blank">
-                <i class="fab fa-telegram-plane"></i> Unirme al Canal
-            </a>
+            <h3>Devs Hub</h3>
+            <p>Aprende programación desde cero con tutoriales diarios y retos de código.</p>
+            <a href="#" class="btn-join">Unirme</a>
         </div>
 
-        <div class="channel-card">
-            <span class="badge">Cine</span>
-            <div class="card-header">
-                <div class="card-icon"><i class="fas fa-film"></i></div>
-                <h3>Cine & Series</h3>
+        <div class="channel-card" data-category="cine">
+            <div class="card-top">
+                <div class="card-icon"><i class="fas fa-popcorn"></i></div>
+                <span class="member-count"><i class="fas fa-users"></i> 42k</span>
             </div>
-            <p>Estrenos, críticas y debates sobre las últimas películas.</p>
-            <a href="https://t.me/ejemplo" class="btn-join" target="_blank">
-                <i class="fab fa-telegram-plane"></i> Unirme al Canal
-            </a>
+            <h3>Cine Estrenos</h3>
+            <p>Resúmenes de películas, trailers y noticias del mundo del séptimo arte.</p>
+            <a href="#" class="btn-join">Unirme</a>
         </div>
-
-        <div class="channel-card">
-            <span class="badge">Finanzas</span>
-            <div class="card-header">
-                <div class="card-icon"><i class="fas fa-bitcoin"></i></div>
-                <h3>Crypto News</h3>
-            </div>
-            <p>Análisis de mercado, Bitcoin y Altcoins al minuto.</p>
-            <a href="https://t.me/ejemplo" class="btn-join" target="_blank">
-                <i class="fab fa-telegram-plane"></i> Unirme al Canal
-            </a>
-        </div>
-
     </main>
-<footer>
-    <p>&copy; 2024 TL Channels. La comunidad de canales.</p>
-    <div class="social-links">
-        <a href="https://t.me/TU_CANAL_OFICIAL"><i class="fab fa-telegram"></i></a>
-        <a href="https://github.com/tlchanels26"><i class="fab fa-github"></i></a>
-        <a href="#"><i class="fas fa-envelope"></i></a>
-    </div>
-</footer>
-    <script src="app.js"></script>
-    
+
+    <button id="scrollTopBtn"><i class="fas fa-arrow-up"></i></button>
+
     <footer>
-    <p>&copy; 2024 TL Channels. La comunidad de canales.</p>
-    <div class="social-links">
-        <a href="https://t.me/TU_CANAL_OFICIAL"><i class="fab fa-telegram"></i></a>
-        <a href="https://github.com/tlchanels26"><i class="fab fa-github"></i></a>
-        <a href="#"><i class="fas fa-envelope"></i></a>
-    </div>
-</footer>
+        <p>&copy; 2024 TL Channels</p>
+    </footer>
+
+    <script src="app.js"></script>
 </body>
 </html>
