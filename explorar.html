@@ -3,39 +3,68 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Explorar Canales - TL Channels</title>
+    <title>TL Channels - Explorar</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
     <nav class="navbar">
-        <a href="explorar.html" class="active">🔍 Explorar</a>
-        <a href="enviar.html">➕ Sugerir Canal</a>
+        <a href="explorar.html" class="active"><i class="fas fa-compass"></i> Explorar</a>
+        <a href="enviar.html"><i class="fas fa-plus-circle"></i> Sugerir</a>
+        <a href="#"><i class="fas fa-envelope"></i> Contacto</a>
     </nav>
 
     <header>
         <h1>TL Channels</h1>
-        <p>Encuentra los mejores grupos y canales de Telegram</p>
+        <p>Descubre. Únete. Crece.</p>
     </header>
 
     <div class="search-container">
-        <input type="text" id="searchInput" placeholder="Escribe para buscar...">
+        <div class="search-wrapper">
+            <i class="fas fa-search search-icon"></i>
+            <input type="text" id="searchInput" placeholder="Busca canales de tecnología, cine, etc...">
+        </div>
     </div>
 
-    <main class="container">
+    <main class="container" id="channelList">
+        
         <div class="channel-card">
             <span class="badge">Tecnología</span>
-            <h3>Programación Web</h3>
-            <p>Recursos diarios sobre HTML, CSS y JavaScript para principiantes.</p>
-            <a href="https://t.me/ejemplo" class="btn-join">Unirse al Canal</a>
+            <div class="card-header">
+                <div class="card-icon"><i class="fas fa-code"></i></div>
+                <h3>Devs Hub</h3>
+            </div>
+            <p>Comunidad para desarrolladores. JavaScript, Python y Open Source.</p>
+            <a href="https://t.me/ejemplo" class="btn-join" target="_blank">
+                <i class="fab fa-telegram-plane"></i> Unirme al Canal
+            </a>
         </div>
 
         <div class="channel-card">
             <span class="badge">Cine</span>
-            <h3>Películas HD</h3>
-            <p>Reseñas de los últimos estrenos y noticias de Hollywood.</p>
-            <a href="https://t.me/ejemplo" class="btn-join">Unirse al Canal</a>
+            <div class="card-header">
+                <div class="card-icon"><i class="fas fa-film"></i></div>
+                <h3>Cine & Series</h3>
+            </div>
+            <p>Estrenos, críticas y debates sobre las últimas películas.</p>
+            <a href="https://t.me/ejemplo" class="btn-join" target="_blank">
+                <i class="fab fa-telegram-plane"></i> Unirme al Canal
+            </a>
         </div>
+
+        <div class="channel-card">
+            <span class="badge">Finanzas</span>
+            <div class="card-header">
+                <div class="card-icon"><i class="fas fa-bitcoin"></i></div>
+                <h3>Crypto News</h3>
+            </div>
+            <p>Análisis de mercado, Bitcoin y Altcoins al minuto.</p>
+            <a href="https://t.me/ejemplo" class="btn-join" target="_blank">
+                <i class="fab fa-telegram-plane"></i> Unirme al Canal
+            </a>
+        </div>
+
     </main>
 
     <script src="app.js"></script>
