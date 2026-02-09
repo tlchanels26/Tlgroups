@@ -1,149 +1,100 @@
-:root{
-  --bg:#ffffff;
-  --text:#111;
-  --muted:#555;
-  --border:#e6e6e6;
-  --card:#fafafa;
-  --primary:#2563eb;
-  --primaryText:#fff;
+:root {
+    --tg-blue: #0088cc;
+    --tg-dark: #1d2733;
+    --bg-light: #f4f4f9;
+    --text-main: #333;
 }
 
-*{ box-sizing:border-box; }
-body{
-  margin:0;
-  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-  background:var(--bg);
-  color:var(--text);
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--bg-light);
+    color: var(--text-main);
+    margin: 0;
 }
 
-.top{
-  border-bottom:1px solid var(--border);
-  padding:14px 16px;
+header {
+    background: var(--tg-blue);
+    color: white;
+    padding: 2rem;
+    text-align: center;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 
-.brand{
-  display:flex;
-  align-items:center;
-  gap:10px;
+.search-container {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 0 20px;
 }
 
-.logo{
-  font-size:22px;
+#searchInput {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #ddd;
+    border-radius: 25px;
+    font-size: 16px;
+    outline: none;
+    transition: border-color 0.3s;
 }
 
-.title{
-  font-weight:800;
-  font-size:18px;
-  line-height:1.1;
+#searchInput:focus {
+    border-color: var(--tg-blue);
 }
 
-.container{
-  padding:16px;
-  max-width:980px;
-  margin:0 auto;
+.container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
 }
 
-h1{ margin:10px 0 6px; font-size:40px; }
-
-.muted{ color:var(--muted); margin:0 0 12px; }
-
-.filters{
-  display:flex;
-  gap:10px;
-  flex-wrap:wrap;
-  margin:12px 0;
+.channel-card {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 }
 
-.input, .select{
-  width: min(520px, 100%);
-  padding:12px 12px;
-  border:1px solid var(--border);
-  border-radius:10px;
-  outline:none;
-  font-size:16px;
+.channel-card h3 { margin: 0 0 10px 0; color: var(--tg-blue); }
+
+.badge {
+    background: #e1effe;
+    color: var(--tg-blue);
+    padding: 4px 10px;
+    border-radius: 15px;
+    font-size: 0.8rem;
+    font-weight: bold;
 }
 
-.select{
-  width: min(280px, 100%);
+.btn-join {
+    display: block;
+    text-align: center;
+    background: var(--tg-blue);
+    color: white;
+    text-decoration: none;
+    padding: 10px;
+    border-radius: 8px;
+    margin-top: 15px;
+    font-weight: bold;
 }
 
-.row{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:12px;
-  margin:10px 0 12px;
-  flex-wrap:wrap;
+/* Estilo para el formulario en enviar.html */
+.form-container {
+    max-width: 500px;
+    margin: 40px auto;
+    background: white;
+    padding: 30px;
+    border-radius: 10px;
 }
 
-.counter{
-  padding:8px 10px;
-  border:1px dashed var(--border);
-  border-radius:10px;
+input, textarea, select {
+    width: 100%;
+    margin-bottom: 15px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
 }
-
-.grid{
-  display:grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap:12px;
-  margin-top:10px;
-}
-
-.card{
-  background:var(--card);
-  border:1px solid var(--border);
-  border-radius:14px;
-  padding:14px;
-}
-
-.card-title{
-  margin:0 0 6px;
-  font-size:18px;
-}
-
-.card-desc{
-  margin:0 0 10px;
-  color:var(--muted);
-}
-
-.pill{
-  display:inline-block;
-  padding:6px 10px;
-  border-radius:999px;
-  background:#eef2ff;
-  color:#1e3a8a;
-  font-size:13px;
-  font-weight:700;
-  margin-bottom:12px;
-}
-
-.actions{
-  display:flex;
-  gap:10px;
-}
-
-.btn{
-  display:inline-block;
-  padding:10px 12px;
-  border-radius:10px;
-  border:1px solid var(--border);
-  background:#fff;
-  text-decoration:none;
-  color:var(--text);
-  font-weight:700;
-}
-
-.btn-primary{
-  background:var(--primary);
-  border-color:var(--primary);
-  color:var(--primaryText);
-}
-
-.empty{
-  padding:12px;
-  border:1px solid var(--border);
-  border-radius:12px;
-  background:#fff7ed;
-  color:#7c2d12;
-}
-
