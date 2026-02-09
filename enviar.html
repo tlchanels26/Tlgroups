@@ -1,67 +1,20 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Sugerir - TL Channels</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sugerir Canal - TL Channels</title>
 
+  <!-- Font Awesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <!-- Estilos -->
   <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
 
+  <!-- Navegación -->
   <nav class="navbar">
     <a href="index.html"><i class="fas fa-home"></i> Inicio</a>
     <a href="explorar.html"><i class="fas fa-compass"></i> Explorar</a>
-    <a href="enviar.html" class="active"><i class="fas fa-plus-circle"></i> Sugerir</a>
-  </nav>
-
-  <header class="page-header">
-    <h1>Sugerir un canal</h1>
-    <p>Envíanos tu canal y lo agregamos al directorio</p>
-  </header>
-
-  <main class="form-wrap">
-    <form class="form-card" onsubmit="event.preventDefault(); alert('¡Gracias! Tu canal fue enviado para revisión ✅'); this.reset();">
-      <div class="form-row">
-        <label for="name">Nombre del canal</label>
-        <input id="name" type="text" placeholder="Ej: Devs Hub" required>
-      </div>
-
-      <div class="form-row">
-        <label for="link">Link de Telegram</label>
-        <input id="link" type="url" placeholder="https://t.me/tuCanal" required>
-      </div>
-
-      <div class="form-row">
-        <label for="category">Categoría</label>
-        <select id="category" required>
-          <option value="" disabled selected>Selecciona una</option>
-          <option value="tecnologia">Tecnología</option>
-          <option value="cine">Cine</option>
-          <option value="finanzas">Finanzas</option>
-          <option value="otros">Otros</option>
-        </select>
-      </div>
-
-      <div class="form-row">
-        <label for="desc">Descripción</label>
-        <textarea id="desc" rows="4" placeholder="¿De qué trata tu canal?" required></textarea>
-      </div>
-
-      <button class="btn-join" type="submit">
-        <i class="fas fa-paper-plane"></i> Enviar
-      </button>
-
-      <p class="form-note">
-        *Tu canal puede tardar un poco en aparecer mientras se revisa.
-      </p>
-    </form>
-  </main>
-
-  <footer>
-    <p>&copy; 2024 TL Channels</p>
-  </footer>
-
-</body>
-</html>
+    <a
