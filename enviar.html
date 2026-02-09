@@ -2,35 +2,47 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Enviar Canal - TL Channels</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sugerir Canal - TL Channels</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+
+    <nav class="navbar">
+        <a href="explorar.html">🔍 Explorar</a>
+        <a href="enviar.html" class="active">➕ Sugerir Canal</a>
+    </nav>
+
     <header>
-        <h1>Sugerir Nuevo Canal</h1>
-        <nav><a href="explorar.html" style="color: white;">Volver a Explorar</a></nav>
+        <h1>Haz crecer tu comunidad</h1>
+        <p>Envía tu canal para que sea listado en nuestro directorio</p>
     </header>
 
     <div class="form-container">
         <form action="https://formspree.io/f/TU_ID_AQUI" method="POST">
-            <label>Nombre del Canal:</label>
-            <input type="text" name="nombre" required>
+            <label>Nombre del Canal</label>
+            <input type="text" name="channel_name" placeholder="Ej: Tech News" required>
 
-            <label>Enlace (@usuario o link):</label>
-            <input type="text" name="link" required>
+            <label>Enlace de Invitación</label>
+            <input type="url" name="channel_link" placeholder="https://t.me/..." required>
 
-            <label>Categoría:</label>
-            <select name="categoria">
-                <option value="tecnologia">Tecnología</option>
-                <option value="entretenimiento">Entretenimiento</option>
-                <option value="educacion">Educación</option>
+            <label>Categoría</label>
+            <select name="category">
+                <option value="Tecnología">Tecnología</option>
+                <option value="Cine">Cine / Series</option>
+                <option value="Educación">Educación</option>
+                <option value="Humor">Humor</option>
+                <option value="Otros">Otros</option>
             </select>
 
-            <label>Descripción:</label>
-            <textarea name="descripcion" rows="4"></textarea>
+            <label>Descripción corta</label>
+            <textarea name="description" rows="4" placeholder="¿De qué trata tu canal?" required></textarea>
 
-            <button type="submit" class="btn-join" style="border:none; width:100%; cursor:pointer;">Enviar para Revisión</button>
+            <button type="submit" class="btn-join" style="width: 100%; border: none; cursor: pointer;">
+                Enviar para revisión
+            </button>
         </form>
     </div>
+
 </body>
 </html>
