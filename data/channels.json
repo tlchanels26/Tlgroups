@@ -1,1 +1,20 @@
-
+[
+  {
+    "nombre": "Devs Hub",
+    "descripcion": "Aprende programación desde cero con tutoriales diarios.",
+    "categoria": "tecnologia",
+    "miembros": 15800,
+    "link": "https://t.me/devshub",
+    "icono": "laptop-code",
+    "estado": "Aprobado"
+  },
+  {
+    "nombre": "Cine Estrenos",
+    "descripcion": "Películas, trailers y noticias del cine.",
+    "categoria": "cine",
+    "miembros": 42000,
+    "link": "https://t.me/cineestrenos",
+    "icono": "popcorn",
+    "estado": "Aprobado"
+  }
+]
