@@ -6,12 +6,10 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   if (!container) return;
 
-  // ✅ TU LINK DIRECTO (Drive público)
-  const JSON_URL = 'https://drive.google.com/uc?export=download&id=11Xo3rZrnzOSb3JCmUs5IFK36MwQ-Irqx';
+  const CSV_URL =
+    'https://docs.google.com/spreadsheets/d/e/2PACX-1vS9bJm9Gy7_zOXLqpYjTg9Dg0YzD39NHV_2jE-OfPFoa_yF23KRIUvPvx4F6c2NyN91CuRUsq-lRMSM/pub?gid=2119025005&single=true&output=csv';
 
-  let channels = [];
-
-  // Formato miembros: 950 -> 950, 15800 -> 15.8k, 1200000 -> 1.2M
+  // ---- Helpers ----
   function formatMembers(n) {
     const num = Number(n) || 0;
     if (num >= 1000000) return (num / 1000000).toFixed(1).replace(/\.0$/, '') + 'M';
@@ -19,39 +17,116 @@ document.addEventListener('DOMContentLoaded', async () => {
     return String(num);
   }
 
-  // "Nuevo" si fue enviado en los últimos 7 días
-  function isNew(fecha) {
-    if (!fecha) return false;
-    const d = new Date(fecha);
+  // Nuevo si fue enviado en los últimos 7 días
+  function isNew(fechaRaw) {
+    if (!fechaRaw) return false;
+    const d = new Date(fechaRaw);
     if (isNaN(d.getTime())) return false;
     const diff = Date.now() - d.getTime();
     return diff >= 0 && diff < 7 * 24 * 60 * 60 * 1000;
   }
 
-  // ✅ Cargar JSON
-  try {
-    const res = await fetch(JSON_URL, { cache: 'no-store' });
-    if (!res.ok) throw new Error('No se pudo cargar el JSON');
-    channels = await res.json();
-  } catch (err) {
-    container.innerHTML = '<p style="text-align:center; opacity:.85;">No se pudieron cargar los canales.</p>';
-    return;
+  // Parser CSV que soporta comillas y comas dentro de campos
+  function parseCSV(text) {
+    const rows = [];
+    let row = [];
+    let field = '';
+    let inQuotes = false;
+
+    // Normalizar saltos de línea
+    text = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+
+    for (let i = 0; i < text.length; i++) {
+      const c = text[i];
+      const next = text[i + 1];
+
+      if (c === '"') {
+        // Dobles comillas dentro de un campo entrecomillado -> "
+        if (inQuotes && next === '"') {
+          field += '"';
+          i++;
+        } else {
+          inQuotes = !inQuotes;
+        }
+      } else if (c === ',' && !inQuotes) {
+        row.push(field);
+        field = '';
+      } else if (c === '\n' && !inQuotes) {
+        row.push(field);
+        field = '';
+        // Evitar filas vacías al final
+        if (row.some(v => v !== '')) rows.push(row);
+        row = [];
+      } else {
+        field += c;
+      }
+    }
+
+    // Último campo/fila
+    row.push(field);
+    if (row.some(v => v !== '')) rows.push(row);
+
+    return rows;
   }
 
-  // ✅ Anti-spam (extra por si acaso): solo Telegram + solo aprobados
-  channels = (channels || []).filter(c => {
-    const link = (c.link || '').trim();
-    return c.estado === 'Aprobado' && /^https:\/\/t\.me\//i.test(link);
-  });
+  async function loadChannelsFromCSV() {
+    const res = await fetch(CSV_URL, { cache: 'no-store' });
+    if (!res.ok) throw new Error('No se pudo cargar el CSV');
+    const text = await res.text();
 
-  // ✅ Orden por miembros (desc)
-  channels.sort((a, b) => (Number(b.miembros) || 0) - (Number(a.miembros) || 0));
+    const rows = parseCSV(text);
+    if (!rows.length) return [];
+
+    // headers = rows[0] (no lo usamos, pero está bien)
+    const dataRows = rows.slice(1);
+
+    const channels = [];
+
+    dataRows.forEach(cols => {
+      // Tus columnas:
+      // A fecha, B nombre, C link, D categoria, E descripcion, F estado, G miembros, H icono
+      const fecha = (cols[0] || '').trim();
+      const nombre = (cols[1] || '').trim();
+      const link = (cols[2] || '').trim();
+      const categoria = (cols[3] || '').trim().toLowerCase() || 'otros';
+      const descripcion = (cols[4] || '').trim();
+      const estado = (cols[5] || '').trim();
+      const miembros = Number((cols[6] || '').trim()) || 0;
+      const icono = (cols[7] || '').trim() || 'layer-group';
+
+      // ✅ Solo aprobados
+      if (estado !== 'Aprobado') return;
+
+      // ✅ Anti-spam: link Telegram
+      if (!/^https:\/\/t\.me\//i.test(link)) return;
+
+      // ✅ Mínimos
+      if (!nombre || !descripcion) return;
+
+      channels.push({
+        fecha,
+        nombre,
+        link,
+        categoria,
+        descripcion,
+        estado,
+        miembros,
+        icono,
+      });
+    });
+
+    // ✅ Orden por miembros desc
+    channels.sort((a, b) => (b.miembros || 0) - (a.miembros || 0));
+
+    return channels;
+  }
 
   function render(list) {
     container.innerHTML = '';
 
     if (!list.length) {
-      container.innerHTML = '<p style="text-align:center; opacity:.85;">No hay resultados 😕</p>';
+      container.innerHTML =
+        '<p style="text-align:center; opacity:.85;">No hay resultados 😕</p>';
       return;
     }
 
@@ -69,8 +144,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         </div>
 
         ${badge}
-        <h3>${c.nombre || 'Canal'}</h3>
-        <p>${c.descripcion || ''}</p>
+        <h3>${escapeHTML(c.nombre)}</h3>
+        <p>${escapeHTML(c.descripcion)}</p>
 
         <a href="${c.link}" class="btn-join" target="_blank" rel="noopener">Unirme</a>
       `;
@@ -79,48 +154,69 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   }
 
-  // Render inicial
-  render(channels);
-
-  // 🔍 Buscador (nombre + descripción)
-  if (searchInput) {
-    searchInput.addEventListener('input', () => {
-      const q = searchInput.value.toLowerCase().trim();
-      const filtered = channels.filter(c => {
-        const n = (c.nombre || '').toLowerCase();
-        const d = (c.descripcion || '').toLowerCase();
-        return !q || n.includes(q) || d.includes(q);
-      });
-      render(filtered);
-    });
+  // Escapar HTML básico por seguridad
+  function escapeHTML(str) {
+    return String(str || '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
   }
 
-  // 🏷️ Filtros por categoría
+  function applySearchAndFilter(allChannels) {
+    const activePill = document.querySelector('.filter-pill.active');
+    const activeCategory = activePill ? activePill.dataset.filter : 'todos';
+    const q = (searchInput?.value || '').toLowerCase().trim();
+
+    let filtered = allChannels;
+
+    if (activeCategory !== 'todos') {
+      filtered = filtered.filter(c => (c.categoria || 'otros') === activeCategory);
+    }
+
+    if (q) {
+      filtered = filtered.filter(c => {
+        const n = (c.nombre || '').toLowerCase();
+        const d = (c.descripcion || '').toLowerCase();
+        return n.includes(q) || d.includes(q);
+      });
+    }
+
+    render(filtered);
+  }
+
+  // ---- Main ----
+  let channels = [];
+
+  try {
+    channels = await loadChannelsFromCSV();
+  } catch (e) {
+    container.innerHTML =
+      '<p style="text-align:center; opacity:.85;">Error cargando los canales.</p>';
+    return;
+  }
+
+  // Render inicial
+  applySearchAndFilter(channels);
+
+  // Buscador
+  if (searchInput) {
+    searchInput.addEventListener('input', () => applySearchAndFilter(channels));
+  }
+
+  // Filtros
   if (filterPills.length) {
     filterPills.forEach(pill => {
       pill.addEventListener('click', () => {
         filterPills.forEach(p => p.classList.remove('active'));
         pill.classList.add('active');
-
-        const cat = pill.dataset.filter;
-        const filtered = (cat === 'todos')
-          ? channels
-          : channels.filter(c => (c.categoria || 'otros') === cat);
-
-        // Si hay texto en buscador, combínalo
-        const q = (searchInput?.value || '').toLowerCase().trim();
-        const combined = filtered.filter(c => {
-          const n = (c.nombre || '').toLowerCase();
-          const d = (c.descripcion || '').toLowerCase();
-          return !q || n.includes(q) || d.includes(q);
-        });
-
-        render(combined);
+        applySearchAndFilter(channels);
       });
     });
   }
 
-  // ⬆️ Scroll top
+  // Scroll top
   if (scrollTopBtn) {
     window.addEventListener('scroll', () => {
       scrollTopBtn.style.display = window.scrollY > 300 ? 'block' : 'none';
